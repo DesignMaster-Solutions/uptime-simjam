@@ -6,6 +6,8 @@ You run a tiny web host out of one rack in a back room. Small businesses pay by 
 Traffic follows the day, busy servers heat the room, hot rooms kill servers, dead servers take sites down,
 unhappy sites cancel, cancellations cost reputation, and reputation is what brings new sign-ups. Survive 60 days.
 
+![Day 13: four servers past 140% load, leads lost for lack of room](docs/s3.png)
+
 **Play:** https://designmaster-solutions.github.io/uptime-simjam/ (browser, no install)
 
 ## Controls
