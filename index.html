@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Uptime: one rack, sixty days</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header id="bar">
+  <div class="stat"><b id="day">Day 1</b><span id="clock">08:00</span></div>
+  <div class="stat"><span>Cash</span><b id="cash">$150</b></div>
+  <div class="stat wide"><span>Reputation</span><div class="meter"><i id="rep"></i></div></div>
+  <div class="stat"><span>Room</span><b id="room">24°C</b><small id="outside">out 22°C</small></div>
+  <div class="stat"><span>Price / site / day</span>
+    <div class="seg" id="price"><button data-p="low">$2</button><button data-p="mid">$3</button><button data-p="high">$5</button></div></div>
+  <div class="stat"><span>Speed</span>
+    <div class="seg" id="speed"><button data-s="0">II</button><button data-s="1">1x</button><button data-s="3">3x</button></div></div>
+</header>
+<main>
+  <section id="rack" aria-label="Server rack"></section>
+  <aside>
+    <button class="buy" id="buyServer">Rack a server <small>$60</small></button>
+    <button class="buy" id="buyCool">Add cooling unit <small>$45</small></button>
+    <p class="hint" id="hint">Click a site, then click a server to move it.</p>
+    <ol id="log"></ol>
+  </aside>
+</main>
+<div id="overlay">
+  <div class="card">
+    <h1>Uptime</h1>
+    <p class="lead">You run a tiny web host out of one rack in a back room. Small businesses pay you by the day to keep their sites up. Keep them up for 60 days.</p>
+    <ul>
+      <li>Sites get busy by day and quiet at night. A server above 100% load makes its sites slow and unhappy.</li>
+      <li>Every busy server heats the room. Past 31°C, servers start to die, and every site on a dead server is down.</li>
+      <li>Unhappy sites cancel, and cancellations cost reputation. Reputation brings new sign-ups. At zero, you are done.</li>
+      <li>Click a site chip, then a server, to move it. Rack servers, upgrade them, add cooling, and set your price: cheap grows fast, expensive grows slow.</li>
+    </ul>
+    <p class="small">Watch for DDoS attacks, sites going viral and heat waves.</p>
+    <button id="start">Open the shop</button>
+  </div>
+</div>
+<script type="module" src="main.js"></script>
+</body>
+</html>
