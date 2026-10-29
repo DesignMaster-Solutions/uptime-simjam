@@ -48,7 +48,7 @@ function render() {
   $('buyCool').disabled = g.cash < S.COST.cooling || g.cooling >= 6;
   $('buyCool').firstChild.textContent = `Add cooling unit (${g.cooling}/6) `;
   $('buyServer').firstChild.textContent = `Rack a server (${g.servers.length}/8) `;
-  $('rack').innerHTML = g.servers.map(s => {
+  $('rack').innerHTML = g.servers.map((s, i) => {
     const l = S.load(g, s.id), down = s.down > 0, pct = Math.round(l * 100);
     const leds = Array.from({ length: 6 }, (_, i) => `<i class="${!down && Math.random() < Math.min(1, l) + 0.1 * (i === 0) ? 'on' : ''}"></i>`).join('');
     const chips = g.sites.filter(x => x.server === s.id).map(x =>
