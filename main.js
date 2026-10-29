@@ -56,7 +56,7 @@ function render() {
     const act = down ? `<button data-repair="${s.id}">${s.fixing ? `Repairing ${s.down}h` : `Repair $${S.COST.repair}`}</button>`
       : s.tier < 3 ? `<button data-up="${s.id}">Upgrade to T${s.tier + 1} $${S.COST.upgrade * s.tier}</button>` : '';
     return `<div class="srv ${down ? 'down' : ''} ${l > 1 ? 'over' : l > 0.8 ? 'hot' : ''} ${sel ? 'target' : ''}" data-srv="${s.id}">
-      <header><span>SRV-${s.id} · T${s.tier} · ${down ? 'DOWN' : pct + '%'}</span><span class="leds">${leds}</span></header>
+      <header><span>SRV-${i + 1} · T${s.tier} · ${down ? 'DOWN' : pct + '%'}</span><span class="leds">${leds}</span></header>
       <div class="load"><i style="width:${Math.min(100, pct)}%;background:${l > 1 ? 'var(--bad)' : l > 0.8 ? 'var(--warn)' : 'var(--ok)'}"></i></div>
       <div class="chips">${chips || '<span class="small">empty</span>'}</div><div class="act">${act}</div></div>`;
   }).join('');
