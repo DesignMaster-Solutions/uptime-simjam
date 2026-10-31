@@ -11,6 +11,7 @@
   <div class="stat"><b id="day">Day 1</b><span id="clock">08:00</span></div>
   <div class="stat"><span>Cash</span><b id="cash">$150</b></div>
   <div class="stat wide"><span>Reputation</span><div class="meter"><i id="rep"></i></div></div>
+  <div class="stat"><span>Uptime</span><b id="up">100%</b></div>
   <div class="stat"><span>Room</span><b id="room">24°C</b><small id="outside">out 22°C</small></div>
   <div class="stat"><span>Price / site / day</span>
     <div class="seg" id="price"><button data-p="low">$2</button><button data-p="mid">$3</button><button data-p="high">$5</button></div></div>
@@ -37,7 +38,8 @@
       <li>Click a site chip, then a server, to move it. Rack servers, upgrade them, add cooling, and set your price: cheap grows fast, expensive grows slow.</li>
     </ul>
     <p class="small">Watch for DDoS attacks, sites going viral and heat waves.</p>
-    <button id="start">Open the shop</button>
+    <p class="small" id="daily"></p>
+    <p class="row"><button id="start">Open today's rack</button><button id="random" class="ghost">Random rack</button></p>
   </div>
 </div>
 <script type="module" src="main.js"></script>

@@ -14,7 +14,8 @@ function beep(f, d = 0.12, type = 'sine', v = 0.05) {
 }
 const SOUND = { good: () => (beep(880), setTimeout(() => beep(1320), 90)), bad: () => beep(140, 0.35, 'square', 0.04), warn: () => beep(520, 0.2, 'triangle') };
 
-function start(seed) { g = S.newGame(seed); sel = null; setSpeed(1); $('overlay').classList.add('hide'); render(); }
+const today = () => new Date().toISOString().slice(0, 10);
+function start(seed, label) { g = S.newGame(seed); g.label = label; sel = null; setSpeed(1); $('overlay').classList.add('hide'); render(); }
 function setSpeed(s) { speed = s; for (const b of $('speed').children) b.classList.toggle('on', +b.dataset.s === s); }
 
 function step() {
@@ -28,12 +29,18 @@ function step() {
 function end() {
   setSpeed(0);
   const why = { survived: 'You kept the lights on for 60 days.', bankrupt: 'The bank closed the shop.', reputation: 'Nobody trusts your servers anymore.' }[g.over];
+  const day = Math.min(g.day - 1, S.DAYS), up = (S.uptime(g) * 100).toFixed(1);
+  const result = `Uptime, ${g.label}: day ${day} · ${up}% uptime · $${g.cash.toFixed(0)} · ${g.sites.length} sites · score ${S.score(g)} · designmastersolutions.itch.io/uptime`;
   $('overlay').innerHTML = `<div class="card"><h1>${g.over === 'survived' ? 'Sixty days up' : 'Shop closed'}</h1>
-    <p class="lead">${why}</p><p>Day ${Math.min(g.day - 1, S.DAYS)} · ${g.sites.length} sites · $${g.cash.toFixed(0)} · reputation ${g.rep.toFixed(0)}</p>
+    <p class="lead">${why}</p><p class="small">${g.label}</p>
+    <p>Day ${day} · <b>${up}% uptime</b> · ${g.sites.length} sites · $${g.cash.toFixed(0)} · reputation ${g.rep.toFixed(0)}</p>
     <p><b>Score ${S.score(g)}</b> <span class="small">(cash + 20 per site + 5 per reputation point)</span></p>
-    <button id="again">Run it again</button></div>`;
+    <p class="row"><input id="result" readonly value="${result.replace(/"/g, '&quot;')}"><button id="copy" class="ghost">Copy result</button></p>
+    <p class="row"><button id="again">Same rack again</button><button id="random" class="ghost">Random rack</button></p></div>`;
   $('overlay').classList.remove('hide');
-  $('again').onclick = () => start(Date.now());
+  $('again').onclick = () => start(g.seed, g.label);
+  $('random').onclick = () => start(Date.now(), 'Random rack');
+  $('copy').onclick = () => { $('result').select(); navigator.clipboard?.writeText(result).then(() => { $('copy').textContent = 'Copied'; }, () => {}); };
 }
 
 function render() {
@@ -41,6 +48,7 @@ function render() {
   $('clock').textContent = `${String(g.hour).padStart(2, '0')}:00`;
   $('cash').textContent = `$${g.cash.toFixed(0)}`; $('cash').style.color = g.cash < 0 ? 'var(--bad)' : '';
   const rep = $('rep'); rep.style.width = `${g.rep}%`; rep.style.background = g.rep < 25 ? 'var(--bad)' : g.rep < 50 ? 'var(--warn)' : 'var(--ok)';
+  $('up').textContent = `${(S.uptime(g) * 100).toFixed(1)}%`; $('up').style.color = S.uptime(g) < 0.95 ? 'var(--bad)' : '';
   $('room').textContent = `${g.room.toFixed(1)}°C`; $('room').classList.toggle('hot', g.room > 31);
   $('outside').textContent = `out ${g.outside.toFixed(0)}°C${g.heatWave > 0 ? ' heat wave' : ''}`;
   for (const b of $('price').children) b.classList.toggle('on', b.dataset.p === g.price);
@@ -77,7 +85,9 @@ $('buyCool').onclick = () => { S.addCooling(g) && beep(330, 0.15, 'triangle'); r
 $('price').onclick = e => { if (e.target.dataset.p) { g.price = e.target.dataset.p; render(); } };
 $('speed').onclick = e => { if (e.target.dataset.s) setSpeed(+e.target.dataset.s); };
 addEventListener('keydown', e => { if (e.code === 'Space' && g && !g.over) { e.preventDefault(); setSpeed(speed ? 0 : 1); } });
-$('start').onclick = () => start(Date.now());
+$('daily').textContent = `Today's rack (${today()}): everyone who opens the shop today gets the same sixty days. Same rack, your calls. Compare results in the comments.`;
+$('start').onclick = () => start(S.dailySeed(), `Daily rack ${today()}`);
+$('random').onclick = () => start(Date.now(), 'Random rack');
 
 function loop(t) {
   if (g && speed && !g.over) { acc += (t - last) * speed; let n = 0; while (acc > 1000) { acc -= 1000; step(); n++; } if (n) render(); }

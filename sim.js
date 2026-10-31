@@ -9,8 +9,8 @@ const NAMES = ['Bakery', 'Dentist', 'Bike Shop', 'Law Firm', 'Florist', 'Gym', '
 export function rng(seed) { let s = seed >>> 0 || 1; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
 
 export function newGame(seed = Date.now()) {
-  const g = { rand: rng(seed), hour: 8, day: 1, cash: 150, rep: 50, price: 'mid', nextId: 1, outside: 22, room: 24,
-    heatWave: 0, servers: [], cooling: 1, sites: [], log: [], over: null, served: 0 };
+  const g = { rand: rng(seed), seed, hour: 8, day: 1, cash: 150, rep: 50, price: 'mid', nextId: 1, outside: 22, room: 24,
+    heatWave: 0, servers: [], cooling: 1, sites: [], log: [], over: null, served: 0, siteHours: 0, upHours: 0 };
   addServer(g, true); addSite(g); addSite(g);
   return g;
 }
@@ -86,6 +86,7 @@ export function tick(g) {
   for (const site of [...g.sites]) {
     const s = g.servers.find(x => x.id === site.server);
     const l = load(g, site.server);
+    g.siteHours++; if (s && s.down <= 0) g.upHours++;
     if (!s || s.down > 0) site.mood -= 9;
     else if (l > 1) site.mood -= 6 * (l - 1) + 2;
     else { site.mood = Math.min(100, site.mood + 1.2); g.served += traffic(g, site); }
@@ -112,3 +113,6 @@ function endOfDay(g) {
   g.day++;
 }
 export const score = g => Math.round(g.cash + g.sites.length * 20 + g.rep * 5);
+export const uptime = g => (g.siteHours ? g.upHours / g.siteHours : 1);
+// One rack per UTC day: everyone who opens the shop today plays the same sixty days.
+export const dailySeed = (d = new Date()) => d.getUTCFullYear() * 10000 + (d.getUTCMonth() + 1) * 100 + d.getUTCDate();

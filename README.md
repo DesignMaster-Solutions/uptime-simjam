@@ -14,6 +14,8 @@ unhappy sites cancel, cancellations cost reputation, and reputation is what brin
 - Click a site chip, then click a server to move it.
 - Rack a server ($60), upgrade it (T2/T3: double/triple capacity, more heat), add cooling ($45), repair a dead server ($40, 6 h).
 - Price per site per day: $2 grows fast, $5 grows slow and wears patience. Space pauses.
+- **Uptime** in the top bar is the share of site-hours spent on a running server; the end screen shows it with the score.
+- **Today's rack**: everyone who opens the shop on the same UTC day gets the same sixty days (same seed, same events), so results are comparable. **Copy result** puts a one-line summary on the clipboard; **Random rack** starts a fresh seed.
 
 ## How it is built
 Plain HTML/CSS/JS, no engine. `sim.js` is the whole model with no DOM, so it is tested with `npm test`
