@@ -40,7 +40,11 @@ function end() {
   $('overlay').classList.remove('hide');
   $('again').onclick = () => start(g.seed, g.label);
   $('random').onclick = () => start(Date.now(), 'Random rack');
-  $('copy').onclick = () => { $('result').select(); navigator.clipboard?.writeText(result).then(() => { $('copy').textContent = 'Copied'; }, () => {}); };
+  $('copy').onclick = () => { // itch embeds may deny the clipboard API: the legacy command works on a selected input
+    $('result').select(); const done = () => { $('copy').textContent = 'Copied'; };
+    let ok = false; try { ok = document.execCommand('copy'); } catch { /* fall through */ }
+    if (ok) done(); else navigator.clipboard?.writeText(result).then(done, () => { $('copy').textContent = 'Selected: press Ctrl+C'; });
+  };
 }
 
 function render() {
