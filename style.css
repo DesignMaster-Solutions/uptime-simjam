@@ -27,7 +27,7 @@ main{display:grid;grid-template-columns:1fr 280px;gap:16px;padding:16px 18px}
 .chip.meh{background:#3a2f17}.chip.sad{background:#3d1a1d}.chip.sel{border-color:var(--amber);color:var(--amber)}
 .chip.viral::after{content:" ▲";color:var(--warn)}.chip.ddos::after{content:" ⚡";color:var(--bad)}
 .srv .act{display:flex;gap:6px;margin-top:8px}
-.srv .act button{flex:1;background:none;border:1px solid var(--line);color:var(--ink);border-radius:5px;padding:3px;font-size:12px;cursor:pointer}
+.srv .act button{flex:1;background:none;border:1px solid var(--line);color:var(--ink);border-radius:5px;padding:3px;font-size:12px;cursor:pointer;white-space:nowrap}
 .srv.down .act button{border-color:var(--bad);color:var(--bad)}
 aside{display:flex;flex-direction:column;gap:8px}
 .buy{background:var(--line);border:0;color:var(--ink);padding:10px;border-radius:6px;font:inherit;cursor:pointer;display:flex;justify-content:space-between}

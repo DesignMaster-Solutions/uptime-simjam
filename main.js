@@ -114,7 +114,7 @@ function render() {
       `<span class="chip ${x.mood < 40 ? 'sad' : x.mood < 65 ? 'meh' : ''} ${x.viral ? 'viral' : ''} ${x.ddos ? 'ddos' : ''} ${x.nulled ? 'dark' : ''} ${sel === x.id ? 'sel' : ''}" data-site="${x.id}" title="mood ${x.mood.toFixed(0)}${x.viral ? ` · viral ${x.viral}h` : ''}${x.ddos ? ` · attack ${x.ddos}h` : ''}">${x.name}</span>`).join('');
     const hit = g.sites.find(x => x.server === s.id && x.ddos > 0 && !x.nulled);
     const act = down ? `<button data-repair="${s.id}">${s.fixing ? `Repairing ${s.down}h` : `Repair $${S.COST.repair}`}</button>`
-      : (hit ? `<button class="danger" data-null="${hit.id}">Null-route ${hit.name}</button>` : '')
+      : (hit ? `<button class="danger" data-null="${hit.id}" title="Null-route ${hit.name}: it goes dark until the attack ends, its neighbours stay fast">Null-route ⚡</button>` : '')
       + (s.tier < 3 ? `<button data-up="${s.id}">Upgrade to T${s.tier + 1} $${S.COST.upgrade * s.tier}</button>` : '');
     return `<div class="srv ${down ? 'down' : ''} ${l > 1 ? 'over' : l > 0.8 ? 'hot' : ''} ${sel ? 'target' : ''}" data-srv="${s.id}">
       <header><span>SRV-${i + 1} · T${s.tier} · ${down ? 'DOWN' : pct + '%'}</span><span class="leds">${leds}</span></header>
