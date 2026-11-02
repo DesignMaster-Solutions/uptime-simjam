@@ -44,3 +44,33 @@ test('the same seed replays the same days when the player does the same thing', 
   for (let i = 0; i < 24 * 10; i++) { tick(a); tick(b); }
   assert.deepEqual(a.log, b.log); assert.equal(a.cash, b.cash); assert.equal(a.seed, 20261031);
 });
+
+import { nullRoute, traffic, addSite } from '../sim.js';
+
+test('a viral site kept fast pays a bonus; a crashed one costs reputation', () => {
+  const kept = newGame(21); kept.rand = () => 0.99; kept.cash = 999; addServer(kept);
+  const star = kept.sites[0]; star.viral = 12; star.viralUp = 0; move(kept, star.id, kept.servers[1].id);
+  const cash = kept.cash, rep = kept.rep;
+  for (let i = 0; i < 12; i++) tick(kept);
+  assert.equal(kept.cash, cash + 25, 'the site pays a bonus'); assert.equal(kept.rep, rep);
+  assert.match(kept.log.map(e => e.text).join('|'), /bonus/);
+
+  const lost = newGame(21); lost.rand = () => 0.99; const vic = lost.sites[0]; vic.viral = 12; vic.viralUp = 0;
+  lost.servers[0].down = 99; const before = lost.rep;
+  for (let i = 0; i < 12; i++) tick(lost);
+  assert.ok(lost.rep < before, 'reputation should fall'); assert.match(lost.log.map(e => e.text).join('|'), /crashed/);
+});
+
+test('null-routing a DDoS saves the neighbours, the target goes dark until the attack ends', () => {
+  const g = newGame(9); g.rand = () => 0.99; g.hour = 14;
+  const [a, b] = g.sites; a.base = 12; b.base = 12; a.ddos = 4;
+  const sid = g.servers[0].id;
+  assert.ok(load(g, sid) > 1, 'attack overloads the server');
+  assert.equal(nullRoute(g, b.id), false, 'only a site under attack can be null-routed');
+  assert.equal(nullRoute(g, a.id), true);
+  assert.equal(traffic(g, a), 0); assert.ok(load(g, sid) < 1, 'neighbour is safe');
+  const moodB = b.mood; tick(g); assert.ok(b.mood >= moodB, 'neighbour stays happy');
+  assert.ok(g.upHours < g.siteHours, 'the dark site counts as down');
+  for (let i = 0; i < 4; i++) tick(g);
+  assert.equal(a.ddos, 0); assert.equal(a.nulled, false); assert.ok(traffic(g, a) > 0, 'back online after the attack');
+});

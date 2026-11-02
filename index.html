@@ -19,7 +19,10 @@
     <div class="seg" id="speed"><button data-s="0">II</button><button data-s="1">1x</button><button data-s="3">3x</button></div></div>
 </header>
 <main>
-  <section id="rack" aria-label="Server rack"></section>
+  <div class="left">
+    <div id="scene"></div>
+    <section id="rack" aria-label="Server rack"></section>
+  </div>
   <aside>
     <button class="buy" id="buyServer">Rack a server <small>$60</small></button>
     <button class="buy" id="buyCool">Add cooling unit <small>$45</small></button>
@@ -27,6 +30,10 @@
     <ol id="log"></ol>
   </aside>
 </main>
+<div id="tip" class="hide" role="dialog" aria-live="polite" aria-label="Tip">
+  <p id="tipText"></p>
+  <p class="row"><button id="tipOk">Got it</button><button id="tipOff" class="ghost">No more tips</button></p>
+</div>
 <div id="overlay">
   <div class="card">
     <h1>Uptime</h1>
@@ -37,7 +44,7 @@
       <li>Unhappy sites cancel, and cancellations cost reputation. Reputation brings new sign-ups. At zero, you are done.</li>
       <li>Click a site chip, then a server, to move it. Rack servers, upgrade them, add cooling, and set your price: cheap grows fast, expensive grows slow.</li>
     </ul>
-    <p class="small">Watch for DDoS attacks, sites going viral and heat waves.</p>
+    <p class="small">Watch for DDoS attacks, sites going viral and heat waves. A tip pops up the first time each one happens.</p>
     <p class="small" id="daily"></p>
     <p class="row"><button id="start">Open today's rack</button><button id="random" class="ghost">Random rack</button></p>
   </div>
