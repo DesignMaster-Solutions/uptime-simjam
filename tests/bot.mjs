@@ -16,6 +16,6 @@ export function play(seed) {
   while (!g.over && n < 24 * 61) { decide(g); m.tick(g); n++; }
   return g;
 }
-if (process.argv[1].endsWith('bot.mjs')) for (const seed of [1, 2, 3, 4, 5, 6]) {
+if (typeof process !== 'undefined' && process.argv[1]?.endsWith('bot.mjs')) for (const seed of [1, 2, 3, 4, 5, 6]) {
   const g = play(seed); console.log(seed, g.over, g.day, g.cash.toFixed(0), g.rep.toFixed(0), g.sites.length, g.servers.length, g.cooling, m.score(g));
 }
