@@ -10,7 +10,9 @@ The top of the screen is the back room itself, drawn from the same numbers: the 
 each server's lights blink faster as it fills, a dead one smokes, the cooling fans spin up as the room warms and the
 thermometer has the 31°C line where servers start to die.
 
-![Day 13: four servers past 140% load, leads lost for lack of room](docs/s3.png)
+![Day 30, heat wave: the room at 41.9°C, two servers repairing, six cooling units flat out](docs/s4.png)
+
+![A DDoS on the Choir site: its server at 113%, the tip explains the null-route button](docs/s5.png)
 
 **Play:** https://designmaster-solutions.github.io/uptime-simjam/ (browser, no install)
 
