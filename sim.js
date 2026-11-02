@@ -68,6 +68,15 @@ export function addSite(g) {
   g.sites.push(site); say(g, `${site.name} signed up`, 'good');
   return site;
 }
+// A big client: a heavy site that pays two slots of your price. Your call: the money, or the headroom.
+const BIG = ['Ticket Shop', 'Online Store', 'Radio Station', 'City Council', 'Arena', 'Newspaper'];
+export function acceptOffer(g) {
+  const o = g.offer, pool = up(g); if (!o || !pool.length) return false;
+  const target = pool.reduce((a, b) => (load(g, a.id) <= load(g, b.id) ? a : b));
+  g.sites.push({ id: g.nextId++, name: o.name, base: o.base, pay: 2, server: target.id, mood: 80, viral: 0, ddos: 0 });
+  g.offer = null; say(g, `${o.name} signed up at double price`, 'good'); return true;
+}
+export function declineOffer(g) { if (!g.offer) return false; say(g, `${g.offer.name} went elsewhere`, ''); g.offer = null; return true; }
 const tag = (g, s) => `SRV-${g.servers.indexOf(s) + 1}`; // the rack slot the player sees, not the internal id
 function say(g, text, kind = '') { g.log.unshift({ t: `D${g.day} ${String(g.hour).padStart(2, '0')}h`, text, kind }); g.log.length = Math.min(g.log.length, 40); }
 
@@ -80,6 +89,7 @@ export function tick(g) {
   if (g.hour === 6 && !g.heatWave && r() < 0.12) { g.heatWave = 24; say(g, 'Heat wave: outside +7°C', 'warn'); }
   g.outside = 22 + 4 * Math.sin(((g.hour - 9) / 24) * Math.PI * 2) + (g.heatWave > 0 ? 7 : 0);
   // arrivals
+  if (!g.offer && g.hour === 10 && g.day > 3 && r() < 0.3) { g.offer = { name: BIG[Math.floor(r() * BIG.length)], base: 24 + r() * 10 }; say(g, `Big client: ${g.offer.name} wants in at double price`, 'warn'); }
   if (r() < 0.11 * (g.rep / 50) * PRICES[g.price].pull) addSite(g);
   // servers: heat and failures
   let heat = 0;
@@ -118,7 +128,7 @@ function viralEnd(g, site) {
 
 function endOfDay(g) {
   g.hour = 0;
-  const income = g.sites.length * PRICES[g.price].day, costs = g.servers.reduce((a, s) => a + s.tier, 0) * COST.serverDay + g.cooling * COST.coolingDay;
+  const income = g.sites.reduce((a, s) => a + (s.pay || 1), 0) * PRICES[g.price].day, costs = g.servers.reduce((a, s) => a + s.tier, 0) * COST.serverDay + g.cooling * COST.coolingDay;
   g.cash += income - costs;
   const avg = g.sites.length ? g.sites.reduce((a, s) => a + s.mood, 0) / g.sites.length : 40;
   g.rep = Math.max(0, Math.min(100, g.rep + (avg - 60) / 10));

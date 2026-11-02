@@ -69,7 +69,8 @@ aside{display:flex;flex-direction:column;gap:8px}
 @media (prefers-reduced-motion:reduce){#scene *{animation:none!important}#scene.jolt{animation:none}}
 .chip.dark{opacity:.45;text-decoration:line-through}
 .srv .act button.danger{border-color:var(--bad);color:var(--bad)}
-#tip{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);width:min(560px,calc(100% - 24px));background:#16262e;border:1px solid var(--amber);border-radius:10px;padding:14px 16px;box-shadow:0 10px 40px rgba(0,0,0,.6);z-index:5}
-#tip.hide{display:none}#tip p{margin:0 0 10px}#tip b{color:var(--amber)}
-#tip .row{display:flex;gap:8px;margin:0}#tip button{background:var(--amber);color:#1b1404;border:0;padding:8px 16px;border-radius:6px;font:600 14px system-ui;cursor:pointer}
-#tip button.ghost{background:none;border:1px solid var(--line);color:var(--ink);font-weight:400}
+#tip,#offer{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);width:min(560px,calc(100% - 24px));background:#16262e;border:1px solid var(--amber);border-radius:10px;padding:14px 16px;box-shadow:0 10px 40px rgba(0,0,0,.6);z-index:5}
+#tip.hide,#offer.hide{display:none}#tip p,#offer p{margin:0 0 10px}#tip b,#offer b{color:var(--amber)}
+#tip .row,#offer .row{display:flex;gap:8px;margin:0}#tip button,#offer button{background:var(--amber);color:#1b1404;border:0;padding:8px 16px;border-radius:6px;font:600 14px system-ui;cursor:pointer}
+#tip button.ghost,#offer button.ghost{background:none;border:1px solid var(--line);color:var(--ink);font-weight:400}
+.chip.big{border-color:var(--amber)}.chip.big::before{content:"$$ ";color:var(--amber);font-weight:700}

@@ -75,3 +75,18 @@ test('null-routing a DDoS saves the neighbours, the target goes dark until the a
   for (let i = 0; i < 4; i++) tick(g);
   assert.equal(a.ddos, 0); assert.equal(a.nulled, false); assert.ok(traffic(g, a) > 0, 'back online after the attack');
 });
+
+import { acceptOffer, declineOffer } from '../sim.js';
+
+test('a big client pays double for a heavy site, or walks if declined', () => {
+  const g = newGame(31); g.rand = () => 0.99; g.cash = 999; addServer(g);
+  g.offer = { name: 'Ticket Shop', base: 30 };
+  const sites = g.sites.length;
+  assert.equal(acceptOffer(g), true); assert.equal(g.offer, null);
+  const big = g.sites.at(-1); assert.equal(g.sites.length, sites + 1); assert.equal(big.pay, 2); assert.equal(big.base, 30);
+  const cash = g.cash; for (let i = 0; i < 16; i++) tick(g);
+  const costs = g.servers.reduce((a, s) => a + s.tier, 0) * 1.5 + g.cooling * 2;
+  assert.equal(g.cash, cash + (g.sites.length + 1) * 3 - costs, 'the big client pays two slots');
+  g.offer = { name: 'Arena', base: 30 }; assert.equal(declineOffer(g), true); assert.equal(g.offer, null);
+  assert.equal(g.sites.length, sites + 1);
+});

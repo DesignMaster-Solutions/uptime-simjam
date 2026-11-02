@@ -43,7 +43,7 @@ $('tipOff').onclick = () => closeTip(true);
 const label = id => `SRV-${g.servers.findIndex(s => s.id === id) + 1}`;
 
 const today = () => new Date().toISOString().slice(0, 10);
-function start(seed, label) { g = S.newGame(seed); g.label = label; sel = null; mountScene($('scene')); setSpeed(1); $('overlay').classList.add('hide'); render(); }
+function start(seed, label) { g = S.newGame(seed); g.label = label; sel = null; mountScene($('scene')); $('offer').classList.add('hide'); setSpeed(1); $('overlay').classList.add('hide'); render(); }
 function setSpeed(s) { speed = s; for (const b of $('speed').children) b.classList.toggle('on', +b.dataset.s === s); }
 
 function step() {
@@ -57,9 +57,19 @@ function step() {
     if (/overheated and died/.test(e.text)) jolt($('scene'));
   }
   if (g.over) return end();
+  if (g.offer && $('offer').classList.contains('hide') && $('tip').classList.contains('hide')) return showOffer();
   react(fresh);
 }
 
+function showOffer() {
+  offerResume = speed || 1; setSpeed(0);
+  $('offerText').innerHTML = `<b>Big client:</b> ${g.offer.name} wants a site here at <b>double your price</b>. It is heavy: about ${Math.round(g.offer.base / 13)}x the traffic of a normal site, all of it landing on your quietest server.`;
+  $('offer').classList.remove('hide'); $('offerYes').focus();
+}
+let offerResume = 1;
+function closeOffer(take) { (take ? S.acceptOffer : S.declineOffer)(g); $('offer').classList.add('hide'); render(); if (!g.over) setSpeed(offerResume); }
+$('offerYes').onclick = () => closeOffer(true);
+$('offerNo').onclick = () => closeOffer(false);
 function react(fresh) {
   const has = re => fresh.find(e => re.test(e.text));
   const dead = g.servers.find(s => s.down > 0 && !s.fixing), over = g.servers.find(s => s.down <= 0 && S.load(g, s.id) > 1);
@@ -111,7 +121,7 @@ function render() {
     const l = S.load(g, s.id), down = s.down > 0, pct = Math.round(l * 100);
     const leds = Array.from({ length: 6 }, (_, i) => `<i class="${!down && Math.random() < Math.min(1, l) + 0.1 * (i === 0) ? 'on' : ''}"></i>`).join('');
     const chips = g.sites.filter(x => x.server === s.id).map(x =>
-      `<span class="chip ${x.mood < 40 ? 'sad' : x.mood < 65 ? 'meh' : ''} ${x.viral ? 'viral' : ''} ${x.ddos ? 'ddos' : ''} ${x.nulled ? 'dark' : ''} ${sel === x.id ? 'sel' : ''}" data-site="${x.id}" title="mood ${x.mood.toFixed(0)}${x.viral ? ` · viral ${x.viral}h` : ''}${x.ddos ? ` · attack ${x.ddos}h` : ''}">${x.name}</span>`).join('');
+      `<span class="chip ${x.mood < 40 ? 'sad' : x.mood < 65 ? 'meh' : ''} ${x.viral ? 'viral' : ''} ${x.ddos ? 'ddos' : ''} ${x.nulled ? 'dark' : ''} ${x.pay === 2 ? 'big' : ''} ${sel === x.id ? 'sel' : ''}" data-site="${x.id}" title="mood ${x.mood.toFixed(0)}${x.viral ? ` · viral ${x.viral}h` : ''}${x.ddos ? ` · attack ${x.ddos}h` : ''}">${x.name}</span>`).join('');
     const hit = g.sites.find(x => x.server === s.id && x.ddos > 0 && !x.nulled);
     const act = down ? `<button data-repair="${s.id}">${s.fixing ? `Repairing ${s.down}h` : `Repair $${S.COST.repair}`}</button>`
       : (hit ? `<button class="danger" data-null="${hit.id}" title="Null-route ${hit.name}: it goes dark until the attack ends, its neighbours stay fast">Null-route ⚡</button>` : '')
@@ -140,6 +150,7 @@ $('buyCool').onclick = () => { S.addCooling(g) && beep(330, 0.15, 'triangle'); r
 $('price').onclick = e => { if (e.target.dataset.p) { g.price = e.target.dataset.p; render(); } };
 $('speed').onclick = e => { if (e.target.dataset.s) setSpeed(+e.target.dataset.s); };
 addEventListener('keydown', e => {
+  if (!$('offer').classList.contains('hide')) return;
   if (!$('tip').classList.contains('hide')) { if (e.code === 'Space' || e.code === 'Enter' || e.code === 'Escape') { e.preventDefault(); closeTip(false); } return; }
   if (e.code === 'Space' && g && !g.over) { e.preventDefault(); setSpeed(speed ? 0 : 1); }
 });
