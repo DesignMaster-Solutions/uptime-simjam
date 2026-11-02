@@ -68,6 +68,7 @@ export function addSite(g) {
   g.sites.push(site); say(g, `${site.name} signed up`, 'good');
   return site;
 }
+const tag = (g, s) => `SRV-${g.servers.indexOf(s) + 1}`; // the rack slot the player sees, not the internal id
 function say(g, text, kind = '') { g.log.unshift({ t: `D${g.day} ${String(g.hour).padStart(2, '0')}h`, text, kind }); g.log.length = Math.min(g.log.length, 40); }
 
 export function tick(g) {
@@ -83,9 +84,9 @@ export function tick(g) {
   // servers: heat and failures
   let heat = 0;
   for (const s of g.servers) {
-    if (s.down > 0) { if (s.fixing && --s.down === 0) { s.fixing = false; say(g, `Server ${s.id} back online`, 'good'); } continue; }
+    if (s.down > 0) { if (s.fixing && --s.down === 0) { s.fixing = false; say(g, `${tag(g, s)} back online`, 'good'); } continue; }
     const l = load(g, s.id); heat += s.tier * (0.8 + 2 * Math.min(l, 1.6));
-    if (g.room > 31 && r() < (g.room - 31) * 0.006 * (1 + l)) { s.down = 1; s.fixing = false; say(g, `Server ${s.id} overheated and died`, 'bad'); }
+    if (g.room > 31 && r() < (g.room - 31) * 0.006 * (1 + l)) { s.down = 1; s.fixing = false; say(g, `${tag(g, s)} overheated and died`, 'bad'); }
   }
   const target = g.outside + heat * 1.1 - g.cooling * 4.5;
   g.room += (Math.max(target, 16) - g.room) * 0.25;

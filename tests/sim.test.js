@@ -22,6 +22,7 @@ test('a day closes with income minus costs, and bankruptcy ends the game', () =>
 test('hot room kills servers', () => {
   const g = newGame(5); g.rand = () => 0.0001; g.room = 45; g.cooling = 0;
   tick(g); assert.ok(g.servers[0].down > 0);
+  assert.match(g.log[0].text, /^SRV-1 overheated/, 'the log names the rack slot the player sees');
 });
 
 import { uptime, dailySeed } from '../sim.js';
