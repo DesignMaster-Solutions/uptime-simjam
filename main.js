@@ -145,13 +145,14 @@ addEventListener('keydown', e => {
 });
 $('daily').textContent = `Today's rack (${today()}): everyone who opens the shop today gets the same sixty days. Same rack, your calls. Compare results in the comments.`;
 $('start').onclick = () => start(S.dailySeed(), `Daily rack ${today()}`);
-// ?ff=N skips N days with the balance bot playing (attract mode / screenshots); &quiet hides the tips.
-const qs = new URLSearchParams(location.search), ff = Math.min(+qs.get('ff') || 0, S.DAYS - 1);
+// ?ff=N skips N days (and &h=H hours) with the balance bot playing, for screenshots; ?ff=0 just opens today's rack.
+// &quiet hides the tips.
+const qs = new URLSearchParams(location.search), ff = Math.min(+qs.get('ff') || 0, S.DAYS - 1), hh = +qs.get('h') || 0;
 if (qs.has('quiet')) Object.keys(TIPS).forEach(k => tipsSeen.add(k));
-if (ff) {
+if (qs.has('ff')) {
   const { decide } = await import('./tests/bot.mjs');
-  start(S.dailySeed(), `Daily rack ${today()} (skipped to day ${ff + 1})`);
-  while (!g.over && g.day <= ff) { decide(g); S.tick(g); }
+  start(S.dailySeed(), ff ? `Daily rack ${today()} (skipped to day ${ff + 1})` : `Daily rack ${today()}`);
+  while (!g.over && (g.day <= ff || (ff && g.hour < hh))) { decide(g); S.tick(g); }
   render();
 }
 $('random').onclick = () => start(Date.now(), 'Random rack');
