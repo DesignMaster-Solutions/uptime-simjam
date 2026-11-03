@@ -87,11 +87,14 @@ function end() {
   setSpeed(0);
   const why = { survived: 'You kept the lights on for 60 days.', bankrupt: 'The bank closed the shop.', reputation: 'Nobody trusts your servers anymore.' }[g.over];
   const day = Math.min(g.day - 1, S.DAYS), up = (S.uptime(g) * 100).toFixed(1);
-  const result = `Uptime, ${g.label}: day ${day} · ${up}% uptime · $${g.cash.toFixed(0)} · ${g.sites.length} sites · score ${S.score(g)} · designmastersolutions.itch.io/uptime`;
+  const sc = S.score(g), L = g.lost, lost = L.slow + L.down + L.nulled, key = `uptime.best.${g.seed}`;
+  let best = 0; try { best = +localStorage.getItem(key) || 0; if (sc > best) localStorage.setItem(key, sc); } catch { /* private mode */ }
+  const result = `Uptime, ${g.label}: day ${day} · ${up}% uptime · $${g.cash.toFixed(0)} · ${g.sites.length} sites · score ${sc} · designmastersolutions.itch.io/uptime`;
   $('overlay').innerHTML = `<div class="card"><h1>${g.over === 'survived' ? 'Sixty days up' : 'Shop closed'}</h1>
     <p class="lead">${why}</p><p class="small">${g.label}</p>
     <p>Day ${day} · <b>${up}% uptime</b> · ${g.sites.length} sites · $${g.cash.toFixed(0)} · reputation ${g.rep.toFixed(0)}</p>
-    <p><b>Score ${S.score(g)}</b> <span class="small">(cash + 20 per site + 5 per reputation point)</span></p>
+    <p><b>Score ${sc}</b> ${best ? (sc > best ? '· <b>new best on this rack</b>' : `· your best on this rack: ${best}`) : ''} <span class="small">(cash + 20 per site + 5 per reputation point)</span></p>
+    <p class="small">${lost ? `${lost} site${lost > 1 ? 's' : ''} cancelled: ${L.slow} on a slow server, ${L.down} on a dead one, ${L.nulled} null-routed` : 'No site cancelled'} · ${g.burned} server${g.burned === 1 ? '' : 's'} burned out in the heat</p>
     <p class="row"><input id="result" readonly value="${result.replace(/"/g, '&quot;')}"><button id="copy" class="ghost">Copy result</button></p>
     <p class="row"><button id="again">Same rack again</button><button id="random" class="ghost">Random rack</button></p></div>`;
   $('overlay').classList.remove('hide');

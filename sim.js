@@ -10,7 +10,8 @@ export function rng(seed) { let s = seed >>> 0 || 1; return () => ((s = (s * 166
 
 export function newGame(seed = Date.now()) {
   const g = { rand: rng(seed), seed, hour: 8, day: 1, cash: 150, rep: 50, price: 'mid', nextId: 1, outside: 22, room: 24,
-    heatWave: 0, servers: [], cooling: 1, sites: [], log: [], over: null, served: 0, siteHours: 0, upHours: 0 };
+    heatWave: 0, servers: [], cooling: 1, sites: [], log: [], over: null, served: 0, siteHours: 0, upHours: 0,
+    lost: { slow: 0, down: 0, nulled: 0 }, burned: 0 };
   addServer(g, true); addSite(g); addSite(g);
   return g;
 }
@@ -96,7 +97,7 @@ export function tick(g) {
   for (const s of g.servers) {
     if (s.down > 0) { if (s.fixing && --s.down === 0) { s.fixing = false; say(g, `${tag(g, s)} back online`, 'good'); } continue; }
     const l = load(g, s.id); heat += s.tier * (0.8 + 2 * Math.min(l, 1.6));
-    if (g.room > 31 && r() < (g.room - 31) * 0.006 * (1 + l)) { s.down = 1; s.fixing = false; say(g, `${tag(g, s)} overheated and died`, 'bad'); }
+    if (g.room > 31 && r() < (g.room - 31) * 0.006 * (1 + l)) { s.down = 1; s.fixing = false; g.burned++; say(g, `${tag(g, s)} overheated and died`, 'bad'); }
   }
   const target = g.outside + heat * 1.1 - g.cooling * 4.5;
   g.room += (Math.max(target, 16) - g.room) * 0.25;
@@ -106,15 +107,16 @@ export function tick(g) {
     const l = load(g, site.server);
     const dark = !s || s.down > 0 || site.nulled;
     g.siteHours++; if (!dark) g.upHours++;
-    if (site.nulled) site.mood -= 5;
-    else if (dark) site.mood -= 9;
-    else if (l > 1) site.mood -= 6 * (l - 1) + 2;
+    // site.hurt remembers what last hurt it, so a cancellation can be blamed on its cause at the end
+    if (site.nulled) { site.mood -= 5; site.hurt = 'nulled'; }
+    else if (dark) { site.mood -= 9; site.hurt = 'down'; }
+    else if (l > 1) { site.mood -= 6 * (l - 1) + 2; site.hurt = 'slow'; }
     else { site.mood = Math.min(100, site.mood + 1.2); g.served += traffic(g, site); }
     site.mood -= PRICES[g.price].day > 3 ? 0.3 : 0;
     if (site.viral > 0) { if (!dark && l <= 1) site.viralUp++; if (--site.viral === 0) viralEnd(g, site); }
     if (site.ddos > 0 && --site.ddos === 0) site.nulled = false;
     if (site.mood < 25 && r() < 0.15) {
-      g.sites.splice(g.sites.indexOf(site), 1); g.rep = Math.max(0, g.rep - 3); say(g, `${site.name} cancelled`, 'bad');
+      g.sites.splice(g.sites.indexOf(site), 1); g.rep = Math.max(0, g.rep - 3); g.lost[site.hurt || 'slow']++; say(g, `${site.name} cancelled`, 'bad');
     }
   }
   if (++g.hour === 24) endOfDay(g);

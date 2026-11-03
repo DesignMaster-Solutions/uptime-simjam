@@ -90,3 +90,14 @@ test('a big client pays double for a heavy site, or walks if declined', () => {
   g.offer = { name: 'Arena', base: 30 }; assert.equal(declineOffer(g), true); assert.equal(g.offer, null);
   assert.equal(g.sites.length, sites + 1);
 });
+
+test('the end screen can say what drove each site away and how many servers the heat burned', () => {
+  const dark = newGame(13); dark.rand = () => 0.1; dark.rep = 10; // no events, no arrivals; churn rolls succeed
+  dark.servers[0].down = 5; dark.servers[0].fixing = false; for (const s of dark.sites) s.mood = 20;
+  tick(dark); assert.deepEqual(dark.lost, { slow: 0, down: 2, nulled: 0 });
+  const slow = newGame(13); slow.rand = () => 0.1; slow.rep = 10;
+  for (const s of slow.sites) { s.base = CAP; s.mood = 20; }
+  tick(slow); assert.deepEqual(slow.lost, { slow: 2, down: 0, nulled: 0 });
+  const hot = newGame(5); hot.rand = () => 0.0001; hot.room = 45; hot.cooling = 0;
+  tick(hot); assert.equal(hot.burned, 1);
+});

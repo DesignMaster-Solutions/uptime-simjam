@@ -25,6 +25,7 @@ thermometer has the 31°C line where servers start to die.
 - A tip pops up (and pauses) the first time each situation happens; "No more tips" turns them off.
 - **Uptime** in the top bar is the share of site-hours spent on a running server; the end screen shows it with the score.
 - **Today's rack**: everyone who opens the shop on the same UTC day gets the same sixty days (same seed, same events), so results are comparable. **Copy result** puts a one-line summary on the clipboard; **Random rack** starts a fresh seed.
+- The **end screen** tells you what drove each lost site away (a slow server, a dead one, a null-route), how many servers burned out in the heat, and your best score on that rack, so the next run has a plan.
 - `?ff=12` skips to day 13 with the balance bot at the controls (`&quiet` hides the tips).
 
 ## How it is built
